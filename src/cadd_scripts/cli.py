@@ -153,11 +153,12 @@ def xdock(protein_input, ligand_input, mode, pro_prep, lig_prep,
           peptide_cap, only_peptide_segment, no_strain, job_title,
           uniprot_list, grid_lib):
     """Reverse docking, global docking, and grid generation."""
+    import os
     from .xdock.modes import resolve_mode
     from .xdock.xglide import run_xglide
     from .xdock.ifd import run_ifd
     from .xdock.peptide import segment_peptides, build_from_fasta
-    from .xdock.preparation import prepare_proteins_rosetta
+    from .xdock.preparation import prepare_proteins_rosetta, filter_grids_by_uniprot
 
     config = XDockConfig(
         protein_input=Path(protein_input).resolve(),
@@ -201,7 +202,19 @@ def xdock(protein_input, ligand_input, mode, pro_prep, lig_prep,
     # Apply mode flags
     resolve_mode(config)
 
-    # Peptide docking flag
+    # Validate grid_center for center-based modes
+    if config.by_center and not config.grid_center.strip():
+        raise click.UsageError(
+            "Grid center coordinates required for this mode. Use -g 'x, y, z'."
+        )
+
+    # UniProt filtering
+    if config.uniprot_list and config.grid_lib:
+        filtered_dir = filter_grids_by_uniprot(config)
+        config.protein_input = filtered_dir
+        config.pro_prep = "none"
+
+    # Peptide docking flag — sets GRIDGEN_PEPTIDE in .inp
     if peptide:
         config.docking = "peptide"
 

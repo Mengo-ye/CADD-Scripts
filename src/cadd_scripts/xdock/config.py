@@ -101,5 +101,6 @@ class XDockConfig:
         if self.job_title:
             return self.job_title
         protein_name = self.protein_input.name
-        ligand_name = self.ligand_input.stem if self.ligand_input else "NoLigand"
+        # Match Bash %%.*  behavior: remove everything after first dot
+        ligand_name = self.ligand_input.name.split(".")[0] if self.ligand_input else "NoLigand"
         return f"{self.mode}-{protein_name}-{ligand_name}-XDOCK"

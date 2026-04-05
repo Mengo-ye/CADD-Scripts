@@ -62,6 +62,6 @@ def resolve_mode(config: XDockConfig) -> None:
     for key, value in overrides.items():
         setattr(config, key, value)
 
-    # GCD mode forces SP precision
-    if config.mode == "GCD":
-        config.precision = "SP"
+    # AllSite mode forces ligand_asl to "ligand" (Bash line 318)
+    if config.mode == "AllSite":
+        config.ligand_asl = "ligand"

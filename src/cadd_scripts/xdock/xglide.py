@@ -90,14 +90,17 @@ def generate_xglide_inp(config: XDockConfig) -> Path:
     if config.grid_in:
         # Iterate over .grd / .zip files in the protein directory
         protein_dir = Path(protein)
-        if protein_dir.is_dir():
-            grid_files = sorted(
-                f
-                for f in protein_dir.iterdir()
-                if f.suffix in (".grd", ".zip")
+        if not protein_dir.is_dir():
+            raise ValueError(
+                "Dock mode requires a directory of grid files as protein input."
             )
-            for gf in grid_files:
-                lines.append(f"GRID      {gf},-1")
+        grid_files = sorted(
+            f
+            for f in protein_dir.iterdir()
+            if f.suffix in (".grd", ".zip")
+        )
+        for gf in grid_files:
+            lines.append(f"GRID      {gf},-1")
     else:
         # Protein prep flags + grid generation settings (INP1 block)
         prep_flags = get_protein_prep_flags(config)
@@ -113,10 +116,10 @@ def generate_xglide_inp(config: XDockConfig) -> Path:
         lines.append(f"GRIDGEN_FORCEFIELD      {config.force_field}")
         lines.append("GRIDGEN_OUTPUTDIR    .")
 
-    # --- Ligand section ---
-    lig_input = config.ligand_input or ""
-    lines.append(f"LIGAND      {lig_input}")
-    lines.append("MAXLIGATOMS     300")
+    # --- Ligand section (only if ligand_input provided) ---
+    if config.ligand_input:
+        lines.append(f"LIGAND      {config.ligand_input}")
+        lines.append("MAXLIGATOMS     300")
     lig_flags = get_ligand_prep_flags(config)
     for key, value in lig_flags.items():
         lines.append(f"{key}    {value}")
@@ -171,7 +174,8 @@ def generate_xglide_inp(config: XDockConfig) -> Path:
             "Please contact wanglin3@shanghaitech.edu.cn."
         )
 
-    inp_path = Path(f"{title}.inp")
+    inp_path = Path(title) / f"{title}.inp"
+    inp_path.parent.mkdir(parents=True, exist_ok=True)
     inp_path.write_text("\n".join(lines) + "\n")
     return inp_path
 
@@ -203,7 +207,8 @@ def generate_native_inp(config: XDockConfig) -> Path:
         "DOCK_POSE_OUTTYPE       poseviewer",
     ]
 
-    inp_path = Path(f"{title}.inp")
+    inp_path = Path(title) / f"{title}.inp"
+    inp_path.parent.mkdir(parents=True, exist_ok=True)
     inp_path.write_text("\n".join(lines) + "\n")
     return inp_path
 

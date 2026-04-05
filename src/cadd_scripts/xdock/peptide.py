@@ -128,7 +128,7 @@ def segment_peptides(config: XDockConfig) -> Path:
             f"Peptide_Length: {pep_length}, Peptide_Stepwise: {pep_step}"
         )
         subprocess.run(
-            ["julia", str(Path("..") / jl_path.name)],
+            ["julia", str(jl_path.resolve())],
             input=input_data,
             text=True,
             cwd=str(out_dir),
@@ -154,10 +154,10 @@ def build_from_fasta(config: XDockConfig) -> Path:
     if not config.peptide_fasta:
         raise ValueError("Peptide FASTA file not specified. Use -f <fasta>.")
 
-    out_dir = Path("Peptides_lib")
+    out_dir = Path("Peptides_Lib")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    out_file = out_dir / "Peptides_lib.maegz"
+    out_file = out_dir / "Peptides_Lib.maegz"
     cap_flag = "-c" if config.peptide_cap else "-z"
 
     # Bash: $SCHRODINGER/run build_peptide.py $Peptide_fasta Peptides_lib/Peptides_lib.maegz -f ${Peptide_fasta} ${cap} -s "Extended"

@@ -148,7 +148,8 @@ def generate_ifd_inp(config: XDockConfig) -> Path:
         "",
     ])
 
-    inp_path = Path(f"{title}.inp")
+    inp_path = Path(title) / f"{title}.inp"
+    inp_path.parent.mkdir(parents=True, exist_ok=True)
     inp_path.write_text("\n".join(lines) + "\n")
     return inp_path
 
@@ -192,6 +193,5 @@ def run_ifd(config: XDockConfig) -> None:
             "-HOST", config.host,
             "-SUBHOST", config.host,
             "-TMPLAUNCHDIR", "-OVERWRITE",
-            str(inp_path),
         ]
     run_cmd(cmd)
