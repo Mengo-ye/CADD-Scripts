@@ -1,6 +1,8 @@
 import click
 from pathlib import Path
 
+from .gvsrun.config import GVSRunConfig
+from .gvsrun.modes import PREDEFINED_MODES
 from .proteinmc.config import ProteinMCConfig
 from .xdock.config import XDockConfig
 from .xdock.modes import VALID_MODES
@@ -244,3 +246,84 @@ def xdock(protein_input, ligand_input, mode, pro_prep, lig_prep,
         run_xglide(config)
     elif config.induce_fit:
         run_ifd(config)
+
+
+# GVSrun command
+VALID_FORCE_FIELDS_GVS = ["OPLS4", "OPLS3e", "OPLS3", "OPLS_2005"]
+GVS_MODES = list(PREDEFINED_MODES.keys()) + ["User_Defined"]
+
+
+@main.command()
+@click.option("-i", "--input", "grid_input", default="None", help="Grid file (.zip) or pattern. Use 'None' for DB-only pipelines.")
+@click.option("-D", "--database", default="Custom_DB", help="Database name from $compound_library.")
+@click.option("-d", "--db-path", "database_path", default=None, type=click.Path(exists=True), help="Custom database path (file or directory).")
+@click.option("-m", "--mode", "running_mode", default="Fast", help="Running mode name or custom pipeline (e.g. 'RDL+HTVS_Normal+SP_Normal').")
+@click.option("-T", "--title", "job_title", default="", help="Job title (auto-generated if empty).")
+@click.option("-R", "--reference", "reference_ligand", default=None, type=click.Path(exists=True), help="Reference ligand file.")
+@click.option("-a", "--htvs-out-num", default="5%", help="HTVS output (percentage '5%%' or count '500').")
+@click.option("-b", "--docking-out-num", default="4000", help="SP/XP output compounds.")
+@click.option("-e", "--set-pull-num", default="500", help="IFT/MMGBSA/CD candidates to pull.")
+@click.option("-c", "--dock-out-conf", default=1, type=int, help="Poses per ligand.")
+@click.option("-p", "--ph", default="7.0:2.0", help="pH:tolerance for LigPrep.")
+@click.option("-s", "--smarts", default=None, help="SMARTs filter expression.")
+@click.option("-q", "--qm-set", default="B3LYP-D3(BJ):6-311G**", help="QM method:basis set.")
+@click.option("-W", "--mw-range", default="100:400", help="MW filter range (min:max).")
+@click.option("-v", "--vdw", "scaling_vdw", default=0.8, type=float, help="VdW scaling for ligand.")
+@click.option("-C", "--covalent-residue", "covalent_attach_residue", default=None, help="Covalent residue (e.g. 'cys:A:1425').")
+@click.option("-E", "--shape-screen", default=None, help="Shape screen params (keep:method:confs).")
+@click.option("-F", "--force-field", default="OPLS4", type=click.Choice(VALID_FORCE_FIELDS_GVS), help="Docking force field.")
+@click.option("-f", "--coarse-ff", default="OPLS_2005", type=click.Choice(VALID_FORCE_FIELDS_GVS), help="Coarse force field for HTVS.")
+@click.option("-u", "--strain-correction", is_flag=True, default=False, help="Enable strain correction.")
+@click.option("-H", "--host", default="CPU", help="Host for CPU queue.")
+@click.option("-N", "--njobs", default=100, type=int, help="Max subjobs.")
+@click.option("-S", "--schrodinger", default=None, type=click.Path(), help="Schrödinger path (default: $SCHRODINGER).")
+@click.option("-P", "--prime-njobs", default=10, type=int, help="Prime licenses.")
+@click.option("-G", "--glide-njobs", default=90, type=int, help="Glide licenses.")
+@click.option("-L", "--ligprep-njobs", default=30, type=int, help="LigPrep licenses.")
+@click.option("-A", "--phase-njobs", default=10, type=int, help="Phase licenses.")
+@click.option("-Q", "--qsite-njobs", default=10, type=int, help="QSite licenses.")
+@click.option("-K", "--qikprop-njobs", default=10, type=int, help="QikProp licenses.")
+@click.option("-M", "--macromodel-njobs", default=10, type=int, help="MacroModel licenses.")
+def gvsrun(grid_input, database, database_path, running_mode, job_title,
+           reference_ligand, htvs_out_num, docking_out_num, set_pull_num,
+           dock_out_conf, ph, smarts, qm_set, mw_range, scaling_vdw,
+           covalent_attach_residue, shape_screen, force_field, coarse_ff,
+           strain_correction, host, njobs, schrodinger,
+           prime_njobs, glide_njobs, ligprep_njobs, phase_njobs,
+           qsite_njobs, qikprop_njobs, macromodel_njobs):
+    """Virtual screening automation pipeline."""
+    from .gvsrun.pipeline import run_pipeline
+
+    config = GVSRunConfig(
+        grid_input=grid_input,
+        database=database,
+        database_path=Path(database_path) if database_path else None,
+        running_mode=running_mode,
+        job_title=job_title,
+        reference_ligand=Path(reference_ligand) if reference_ligand else None,
+        htvs_out_num=htvs_out_num,
+        docking_out_num=docking_out_num,
+        set_pull_num=set_pull_num,
+        dock_out_conf=dock_out_conf,
+        ph=ph,
+        smarts=smarts,
+        qm_set=qm_set,
+        mw_range=mw_range,
+        scaling_vdw=scaling_vdw,
+        covalent_attach_residue=covalent_attach_residue,
+        shape_screen=shape_screen,
+        force_field=force_field,
+        coarse_ff=coarse_ff,
+        strain_energy="true" if strain_correction else "false",
+        host=host,
+        njobs=njobs,
+        schrodinger=Path(schrodinger) if schrodinger else None,
+        prime_njobs=prime_njobs,
+        glide_njobs=glide_njobs,
+        ligprep_njobs=ligprep_njobs,
+        phase_njobs=phase_njobs,
+        qsite_njobs=qsite_njobs,
+        qikprop_njobs=qikprop_njobs,
+        macromodel_njobs=macromodel_njobs,
+    )
+    run_pipeline(config)
