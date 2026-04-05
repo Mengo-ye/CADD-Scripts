@@ -150,7 +150,7 @@ cadd gvsrun -d ligands.mae -m "No_Dup+RDL+Radial_Tanimoto" -i None
 
 ---
 
-## 三、过滤任务测试（23 种）
+## 三、过滤任务测试（20 种）
 
 单独测试每个过滤任务：
 
@@ -356,7 +356,7 @@ diff test_bash.inp test_python.inp
 ## 十、任务清单汇总
 
 Python 版已注册 **81 个任务**：
-- 23 过滤任务（20 LigFilter + No_Dup + QIKPROP + MW）
+- 20 过滤任务（17 LigFilter + No_Dup + QIKPROP + MW）
 - 21 对接任务（6 HTVS + 8 SP + 7 XP）
 - 10 LigPrep 任务
 - 20 聚类任务（5 指纹 × 4 相似性）

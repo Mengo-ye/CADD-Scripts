@@ -1,49 +1,49 @@
 # CADD-Scripts (using Schrödinger and Rosetta)
-Scripts to run Schrödinger and Rosetta jobs.
+
+用于运行 Schrödinger 和 Rosetta 计算任务的自动化工具集。
 
 [![DOI](https://zenodo.org/badge/365661221.svg)](https://zenodo.org/badge/latestdoi/365661221)
 
-News
+新闻
 ----
-* 2025/04/02, we add an option `-u` to control the strain energy correction. The default is `false`, this may result in GVSrun's behavior being different from before.
+* 2025/04/02，新增 `-u` 选项控制应变能校正。默认关闭，这可能导致 GVSrun 的行为与之前不同。
 
-Installation
+安装
 ----
 
-Download CADD-Scripts and set the environment variable.
-
-```
+```bash
 git clone https://github.com/Wang-Lin-boop/CADD-Scripts
 cd CADD-Scripts
-echo "export PATH=${PWD}:\${PATH}" >> ~/.bashrc
-chmod +x XDock
-chmod +x GVSrun
-chmod +x ProteinMC
-source ~/.bashrc
+pip install -e .
 ```
 
+安装完成后，`cadd` 命令即可在终端中使用。
 
-Scripts
+工具说明
 ----
-Linux shell scripts (`XDock, GVSrun, ProteinMC`) to run Virual Screening, Cross-Docking and MC Simulations.
-Using -h option to show help information for this scripts, such as `GVSrun -h`.
 
+- **GVSrun** — 虚拟筛选自动化流水线
+- **XDock** — 反向对接、全局对接与批量格点生成
+- **ProteinMC** — 蛋白质弛豫、蛋白-蛋白对接、MM-GBSA 计算
+
+使用 `--help` 查看帮助信息，例如 `cadd gvsrun --help`。
+
+快速示例
+----
+
+```bash
+cadd proteinmc prime -i protein.mae -t MC
+cadd xdock -P proteins/ -L ligand.mae -m SITEMAP
+cadd gvsrun -i grid.zip -d ligands.mae -m Normal
 ```
-   GVSrun: Virual Screening;
 
-   XDock: Reverse Docking, Global Docking and Batch Grid Genenation.
-
-   ProteinMC: Protein Relax, Protein-Protein Docking, MM-GBSA Calculation. 
-```
-
-Related-Script
+相关项目
 ----
 
-Refer to [AutoMD](https://github.com/Wang-Lin-boop/AutoMD) for automated execution of molecular dynamics simulations and trajectory analysis.
+分子动力学模拟的自动化执行与轨迹分析请参考 [AutoMD](https://github.com/Wang-Lin-boop/AutoMD)。
 
-Chinese documents
+中文文档
 ----
-中文文档可以访问：
 
 [XDock](https://zhuanlan.zhihu.com/p/387371069)
 
@@ -51,21 +51,28 @@ Chinese documents
 
 [GVSrun and plmd](https://zhuanlan.zhihu.com/p/370850885)
 
-
-Environment Variables
+环境变量
 ----
-These environmental variables are necessary: 
 
-1:`SCHRODINGER` (installation path of Schrodinger) is required for `GVSrun`, and `XDock`;
+以下环境变量需要在使用前设置：
 
-2:`compound_library` (compound library for your compound databases) is required for `GVSrun`;
+1. `SCHRODINGER`（Schrödinger 安装路径）— `GVSrun`、`XDock` 和 `ProteinMC` 均需要；
+2. `compound_library`（化合物数据库路径）— `GVSrun` 使用数据库名称时需要；
+3. `rosetta_app` 或 `rosetta_db`（Rosetta 安装路径）— `XDock` 的 Rosetta 相关功能需要。
 
-3:`rosetta_app` or `rosetta_db` (installation path of rosetta) is optional for `XDock`;
+可以将这些变量添加到 `~/.bashrc` 中，例如：
 
-You can add those Environment Variables to your `~/.bashrc`!
+```bash
+export SCHRODINGER=/public/home/wanglin3/software/SCHRODINGER
+export compound_library=/public/home/wanglin3/compound_databases
+```
 
-For example,  `export SCHRODINGER=/public/home/wanglin3/software/SCHRODINGER`
-
-How to cite
+引用方式
 ----
-It is recommended that citing the script by a link (such as: `GVSrun(https://github.com/Wang-Lin-boop/CADD-Scripts)`) or refer to this page [Ways to cite a GitHub Repo](https://www.wikihow.com/Cite-a-GitHub-Repository) to promote reproducibility of your work.
+
+建议通过链接引用本工具（例如：`GVSrun(https://github.com/Wang-Lin-boop/CADD-Scripts)`），或参考 [Ways to cite a GitHub Repo](https://www.wikihow.com/Cite-a-GitHub-Repository) 以提高工作的可重复性。
+
+作者
+----
+
+Wang Lin (wanglin3@shanghaitech.edu.cn)

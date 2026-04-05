@@ -1,6 +1,5 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-import os
 
 
 @dataclass
@@ -23,15 +22,9 @@ class ProteinMCConfig:
     constraints_tolerance: float = 0.0
     comp1: str = "A"
     comp2: str = "B"
-    schrodinger: Path | None = field(
-        default_factory=lambda: Path(p) if (p := os.environ.get("SCHRODINGER")) else None
-    )
-    rosetta_app: Path | None = field(
-        default_factory=lambda: Path(p) if (p := os.environ.get("rosetta_app")) else None
-    )
-    rosetta_db: Path | None = field(
-        default_factory=lambda: Path(p) if (p := os.environ.get("rosetta_db")) else None
-    )
+    schrodinger: Path | None = None
+    rosetta_app: Path | None = None
+    rosetta_db: Path | None = None
     rosetta_version: str = "mpi"
 
     @property

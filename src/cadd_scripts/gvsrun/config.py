@@ -5,8 +5,7 @@ All defaults are taken from the original GVSrun Bash script (lines 8-61).
 
 from __future__ import annotations
 
-import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -86,11 +85,7 @@ class GVSRunConfig:
     # ------------------------------------------------------------------
     # Paths
     # ------------------------------------------------------------------
-    schrodinger: Path | None = field(
-        default_factory=lambda: (
-            Path(p) if (p := os.environ.get("SCHRODINGER")) else None
-        )
-    )
+    schrodinger: Path | None = None
 
     # ------------------------------------------------------------------
     # Internal state (set during execution, not from CLI)
@@ -102,10 +97,10 @@ class GVSRunConfig:
     # Helpers
     # ------------------------------------------------------------------
     def require_schrodinger(self) -> Path:
-        """Return the Schrodinger installation path or raise."""
+        """Return the Schrödinger installation path or raise."""
         if not self.schrodinger:
             raise RuntimeError(
-                "Schrodinger path not set. Use -S or set $SCHRODINGER."
+                "Schrödinger path not set. Use --schrodinger or set $SCHRODINGER."
             )
         return self.schrodinger
 

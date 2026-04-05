@@ -72,6 +72,16 @@ def _make_ctx(config: Any, ligand_name: str) -> dict[str, Any]:
         "ligprep_njobs": config.ligprep_njobs,
         "qikprop_njobs": config.qikprop_njobs,
         "macromodel_njobs": config.macromodel_njobs,
+        "dft_name": config.qm_dft_name,
+        "basis_name": config.qm_basis,
+        "database": config.database,
+        "database_location": str(config.database_path) if config.database_path else "",
+        "keep_num": config.shape_screen_array[0] if config.shape_screen else "10000",
+        "shape_sample_method": config.shape_screen_array[1] if config.shape_screen else "rapid",
+        "max_confs": config.shape_screen_array[2] if config.shape_screen else "100",
+        "schrodinger": str(config.require_schrodinger()) if config.schrodinger else "",
+        "host": config.host,
+        "to_rmsd": config.to_rmsd,
     }
 
 
