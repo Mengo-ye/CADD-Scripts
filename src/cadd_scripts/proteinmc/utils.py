@@ -1,12 +1,6 @@
-import shlex
-import subprocess
 from pathlib import Path
 
-
-def run_cmd(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess:
-    """Run a subprocess command, printing it for transparency."""
-    print(f"Running: {shlex.join(cmd)}")
-    return subprocess.run(cmd, check=check)
+from ..utils import run_cmd
 
 
 def resolve_input(

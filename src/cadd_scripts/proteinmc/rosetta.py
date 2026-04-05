@@ -1,7 +1,7 @@
 from pathlib import Path
 
+from ..utils import run_cmd
 from .config import ProteinMCConfig
-from .utils import run_cmd
 
 
 def _prepare_rosetta_input(config: ProteinMCConfig, job_name: str) -> bool:

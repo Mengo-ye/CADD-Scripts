@@ -1,7 +1,8 @@
 from pathlib import Path
 
+from ..utils import run_cmd
 from .config import ProteinMCConfig
-from .utils import resolve_input, run_cmd
+from .utils import resolve_input
 
 
 def _generate_mc_inp(config: ProteinMCConfig, job_name: str, input_file: Path) -> Path:
