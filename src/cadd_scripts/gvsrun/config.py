@@ -111,10 +111,21 @@ class GVSRunConfig:
 
     @property
     def auto_job_title(self) -> str:
-        """Derive a job title when none was explicitly given."""
+        """Derive a job title when none was explicitly given.
+
+        Format matches Bash: {database}-{grid_stem}-{running_mode}.
+        The grid portion is "NoGrid" when grid_input is "None".
+        """
         if self.job_title:
             return self.job_title
-        return f"GVS_{self.running_mode}"
+        # Extract stem from grid_input (supports glob patterns by taking first part)
+        if self.grid_input == "None" or not self.grid_input:
+            grid_stem = "NoGrid"
+        else:
+            # Use Bash-style %%.zip* extraction (longest match at end)
+            grid_name = Path(self.grid_input).name
+            grid_stem = grid_name.split(".zip")[0] if ".zip" in grid_name else Path(grid_name).stem
+        return f"{self.database}-{grid_stem}-{self.running_mode}"
 
     @property
     def shape_screen_array(self) -> list[str]:

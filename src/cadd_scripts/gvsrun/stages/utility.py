@@ -170,9 +170,11 @@ def _generate_local_shape(task: str, ctx: dict[str, Any]) -> tuple[str, str]:
         "-TMPLAUNCHDIR",
     ]
 
-    # If localShape is the only/first task in the pipeline, run without -WAIT
+    # If localShape is the ONLY task in the pipeline, run without -WAIT
     # and exit (non-blocking). Otherwise, run with -WAIT (blocking).
-    is_standalone = pipeline == "localShape" or pipeline.startswith("localShape")
+    # Bash: ${Pipeline:-10} == "localShape" && ${Pipeline:0:10} == "localShape"
+    # Both conditions require exact match (length 10).
+    is_standalone = pipeline == "localShape"
 
     if is_standalone:
         cmd = " ".join(cmd_parts)
@@ -198,7 +200,7 @@ def run_local_shape(task: str, ctx: dict[str, Any]) -> tuple[str, str]:
     """
     cmd, align_file = _generate_local_shape(task, ctx)
     pipeline: str = ctx["pipeline"]
-    is_standalone = pipeline == "localShape" or pipeline.startswith("localShape")
+    is_standalone = pipeline == "localShape"
 
     subprocess.run(cmd, shell=True, check=True)  # noqa: S602
 

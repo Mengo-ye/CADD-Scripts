@@ -65,6 +65,7 @@ def _make_ctx(config: Any, ligand_name: str) -> dict[str, Any]:
         "covalent_attach_residue": config.covalent_attach_residue,
         "reference_ligand": config.reference_ligand,
         "shape_screen": config.shape_screen,
+        "pipeline": config.pipeline,
         "njobs": config.njobs,
         "prime_njobs": config.prime_njobs,
         "glide_njobs": config.glide_njobs,
