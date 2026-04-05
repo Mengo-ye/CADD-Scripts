@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cadd-scripts"
+dynamic = ["version"]
+description = "CADD automation scripts for virtual screening, docking, and protein refinement"
+requires-python = ">=3.10"
+dependencies = ["click"]
+license = {text = "MIT"}
+readme = "README.md"
+
+[project.scripts]
+cadd = "cadd_scripts.cli:main"
+
+[tool.hatch.version]
+path = "src/cadd_scripts/__init__.py"
